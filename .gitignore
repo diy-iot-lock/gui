@@ -16,6 +16,8 @@ coverage/
 collection/
 dist/
 dist-transpiled/
+www/
+.sourcemaps/
 node_modules/
 tmp/
 temp/
