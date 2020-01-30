@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Home
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center">
+            <div class="alert alert-info" role="alert">
+                <h1>Current captured image</h1>
+            </div>
+            <img  #png [src]="photo" style='display: none;'>
+            <canvas #canvas width="0" height="0"></canvas>   
+        </div>
+    </div>
+    <div>
+        <ul *ngFor = 'let candidate of candidates; let i = index'>
+            <li>
+                <span>Face #{{i+1}} - {{candidate*100}}%</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center">
+            <div class="alert alert-warning" role="alert">
+                <h1>Actions</h1>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center py-2">
+                <button id="btnCapture" class="btn btn-primary" (click)="takePicture()">Take photo</button>
+                <button *ngIf="photo" id="btnSetMaster" class="btn btn-info" (click)="detectFaces()">Detect faces</button>
+                <div *ngFor = 'let rectangle of nativeRectangles; let i = index'>
+                    <button id="btnSetMaster" class="btn btn-info" (click)="setImageAsMaster(rectangle, i+1)">Set image as master {{i+1}}</button>
+                </div>
+                
+                <button *ngIf="photo" id="btnTryUnlock" class="btn btn-success" (click)="tryToUnlock()">Try to unlock</button>
+            </div>
+
+            <div class="text-lg-left">
+                <ul id="msgLog"></ul>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center">
+            <div class="alert alert-warning" role="alert">
+                <h1>Status</h1>
+            </div>
+            <div>
+                <div>
+                    <img src={{status}} />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</ion-content>

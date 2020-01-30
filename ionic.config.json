@@ -1,5 +1,7 @@
 {
-  "name": "gui",
-  "integrations": {},
-  "type": "ionic-angular"
+  "name": "ion",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
 }
