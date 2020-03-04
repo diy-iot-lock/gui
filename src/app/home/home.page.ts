@@ -30,9 +30,8 @@ export class HomePage {
   public width: number;
   public height: number;
   public resize: boolean;
-  public ratioRectWidth: number;
-  public ratioRectHidth: number;
   public candidates: any[] =[];
+  public ratio: number;
 
   constructor(private sanitizer: DomSanitizer, public platform: Platform, public config: ConfigService) {
     this.app = new DIYIoTlockApp();
@@ -48,8 +47,11 @@ export class HomePage {
   canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('png', { static: true })
   png: ElementRef;
+  @ViewChild('photo', { static: true })
+  div: ElementRef;
 
   ngOnInit() {
+    console.log(this.div.nativeElement.style.width)
     this.initApp();
     this.ctx  = this.canvas.nativeElement.getContext('2d');
     this.status = this.platformStatus + 'assets/img/ready.jpg';
@@ -69,7 +71,7 @@ export class HomePage {
 
     this.png.nativeElement.src = this.photo.changingThisBreaksApplicationSecurity;
 
-    this.drawImg(this.png.nativeElement, this.ctx, this.canvas, this.width, this.height);
+    this.drawImg(this.png.nativeElement, this.ctx, this.canvas, this.width, this.height, this.div);
     this.status = this.platformStatus + 'assets/img/ready.jpg';
     this.rectangles = [];
     this.nativeRectangles =[];
@@ -86,12 +88,13 @@ export class HomePage {
     this.imgBlob = this.dataURItoBlob(data);
   }
 
-  drawImg(img, ctx, canvas, width, height) {
+  drawImg(img, ctx, canvas, width, height, div) {
     img.onload = function() {
       width = img.width;
       height = img.height;
-      canvas.nativeElement.width = width;
-      canvas.nativeElement.height = height;
+      this.ratio = img.width/div.nativeElement.offsetWidth;
+      canvas.nativeElement.width = div.nativeElement.offsetWidth;
+      canvas.nativeElement.height = img.height/this.ratio;
       ctx.drawImage(img,0,0,canvas.nativeElement.width,canvas.nativeElement.height);
     }
   }
@@ -124,16 +127,6 @@ export class HomePage {
               img_height=img_width/ratioImg;
           }
 
-      if(this.rectangles.length>0) {
-        this.ratioRectWidth = this.png.nativeElement.width / img_width;
-        this.ratioRectHidth = this.png.nativeElement.height / img_height;
-        this.rectangles.forEach(i => {
-          i.width = i.width/this.ratioRectWidth;
-          i.height = i.height/this.ratioRectHidth;
-          i.left = i.left/this.ratioRectWidth;
-          i.top = i.top/this.ratioRectHidth;
-        })
-      }
       this.canvas.nativeElement.width = canvas_width;
       this.canvas.nativeElement.height = canvas_height;
       this.png.nativeElement.src = this.photo.changingThisBreaksApplicationSecurity;
@@ -142,13 +135,15 @@ export class HomePage {
     }
   }
 
-  drawRect(rectangles){
+  drawRect(rectangles){  
+    let ratioRectWidth = this.png.nativeElement.naturalWidth / this.canvas.nativeElement.width;
+    let ratioRectHidth = this.png.nativeElement.naturalHeight / this.canvas.nativeElement.height;
     rectangles.forEach((i, index) => {
-    this.ctx.strokeStyle = "red";
-    this.ctx.strokeRect(i.left, i.top, i.width, i.height);
-    this.ctx.font = "40px Arial";
-    this.ctx.fillStyle = "red";
-    this.ctx.fillText(`${index+1}`, i.left-25, i.top+30);
+      this.ctx.strokeStyle = "red";
+      this.ctx.strokeRect(i.left/ratioRectWidth, i.top/ratioRectHidth, i.width/ratioRectWidth, i.height/ratioRectHidth);
+      this.ctx.font = "40px Arial";
+      this.ctx.fillStyle = "red";
+      this.ctx.fillText(`${index+1}`, i.left/ratioRectWidth-25, i.top/ratioRectHidth+30);
     })
   }
 
